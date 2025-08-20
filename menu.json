@@ -1,0 +1,179 @@
+{
+  "veg": [
+    {
+      "item": "Paneer Butter Masala",
+      "price": "₹80",
+      "photo": "assets/paneer butter.jpg",
+      "calories": "320 kcal",
+      "ingredients": "Paneer, Tomato Puree, Cream, Butter, Onion, Garlic, Ginger, Spices"
+    },
+    {
+      "item": "Veg Biryani",
+      "price": "₹70",
+      "photo": "assets/veg biriyani.jpg",
+      "calories": "290 kcal",
+      "ingredients": "Basmati Rice, Mixed Vegetables, Onion, Tomato, Yogurt, Spices, Ghee"
+    },
+    {
+      "item": "Aloo Gobi",
+      "price": "₹60",
+      "photo": "assets/aloo gobi.jpg",
+      "calories": "250 kcal",
+      "ingredients": "Potato, Cauliflower, Onion, Tomato, Garlic, Ginger, Spices"
+    },
+    {
+      "item": "Dal Tadka",
+      "price": "₹50",
+      "photo": "assets/dal tadka.jpg",
+      "calories": "220 kcal",
+      "ingredients": "Yellow Lentils, Onion, Tomato, Garlic, Cumin, Ghee, Spices"
+    },
+    {
+      "item": "Chole Bhature",
+      "price": "₹75",
+      "photo": "assets/chole bhature.jpg",
+      "calories": "400 kcal",
+      "ingredients": "Chickpeas, Onion, Tomato, Spices, Refined Flour, Yogurt, Oil"
+    },
+    {
+      "item": "Veg Pulao",
+      "price": "₹65",
+      "photo": "assets/veg pulao.jpg",
+      "calories": "270 kcal",
+      "ingredients": "Basmati Rice, Mixed Vegetables, Onion, Green Peas, Spices, Ghee"
+    },
+    {
+      "item": "Matar Paneer",
+      "price": "₹85",
+      "photo": "assets/matar paneer.jpg",
+      "calories": "330 kcal",
+      "ingredients": "Paneer, Green Peas, Onion, Tomato, Cream, Spices"
+    },
+    {
+      "item": "Rajma Chawal",
+      "price": "₹70",
+      "photo": "assets/rajma chawal.jpg",
+      "calories": "310 kcal",
+      "ingredients": "Kidney Beans, Rice, Onion, Tomato, Garlic, Spices"
+    },
+    {
+      "item": "Mix Veg Curry",
+      "price": "₹60",
+      "photo": "assets/mix veg curry.jpg",
+      "calories": "240 kcal",
+      "ingredients": "Mixed Vegetables, Onion, Tomato, Spices, Oil"
+    },
+    {
+      "item": "Palak Paneer",
+      "price": "₹90",
+      "photo": "assets/palak paneer.jpg",
+      "calories": "340 kcal",
+      "ingredients": "Paneer, Spinach Puree, Onion, Tomato, Garlic, Cream, Spices"
+    },
+    {
+      "item": "Bhindi Masala",
+      "price": "₹55",
+      "photo": "assets/bhindi masala.jpg",
+      "calories": "210 kcal",
+      "ingredients": "Ladyfinger, Onion, Tomato, Garlic, Spices"
+    },
+    {
+      "item": "Baingan Bharta",
+      "price": "₹60",
+      "photo": "assets/baigan bharta.jpg",
+      "calories": "230 kcal",
+      "ingredients": "Roasted Eggplant, Onion, Tomato, Garlic, Ginger, Spices"
+    },
+    {
+      "item": "Kadai Paneer",
+      "price": "₹95",
+      "photo": "assets/kadai paneer.jpg",
+      "calories": "350 kcal",
+      "ingredients": "Paneer, Capsicum, Onion, Tomato, Garlic, Ginger, Spices"
+    },
+    {
+      "item": "Malai Kofta",
+      "price": "₹100",
+      "photo": "assets/malai kofta.jpg",
+      "calories": "370 kcal",
+      "ingredients": "Paneer, Potato, Cream, Onion, Tomato, Cashew Paste, Spices"
+    },
+    {
+      "item": "Jeera Rice",
+      "price": "₹40",
+      "photo": "assets/jeera rice.jpg",
+      "calories": "200 kcal",
+      "ingredients": "Basmati Rice, Cumin Seeds, Ghee, Salt"
+    },
+    {
+      "item": "Tawa Roti",
+      "price": "₹10",
+      "photo": "assets/tawa roti.jpg",
+      "calories": "80 kcal",
+      "ingredients": "Whole Wheat Flour, Water, Salt"
+    },
+    {
+      "item": "Butter Naan",
+      "price": "₹25",
+      "photo": "assets/butter naan.jpg",
+      "calories": "150 kcal",
+      "ingredients": "Refined Flour, Yogurt, Baking Powder, Butter"
+    },
+    {
+      "item": "Veg Manchurian",
+      "price": "₹80",
+      "photo": "assets/veg manchurian.jpg",
+      "calories": "310 kcal",
+      "ingredients": "Cabbage, Carrot, Spring Onion, Soy Sauce, Garlic, Spices"
+    },
+    {
+      "item": "Gobi 65",
+      "price": "₹70",
+      "photo": "assets/gobi 65.jpg",
+      "calories": "280 kcal",
+      "ingredients": "Cauliflower, Corn Flour, Yogurt, Spices"
+    },
+    {
+      "item": "Paneer Tikka",
+      "price": "₹90",
+      "photo": "assets/paneer tikka.jpg",
+      "calories": "320 kcal",
+      "ingredients": "Paneer, Yogurt, Garlic, Ginger, Spices"
+    },
+    {
+      "item": "Veg Sandwich",
+      "price": "₹40",
+      "photo": "assets/veg sandwich.jpg",
+      "calories": "180 kcal",
+      "ingredients": "Bread, Cucumber, Tomato, Onion, Butter, Chutney"
+    },
+    {
+      "item": "Samosa",
+      "price": "₹15",
+      "photo": "assets/samosa.jpg",
+      "calories": "120 kcal",
+      "ingredients": "Potato, Peas, Refined Flour, Spices, Oil"
+    },
+    {
+      "item": "Idli Sambar",
+      "price": "₹35",
+      "photo": "assets/idli sambar.jpg",
+      "calories": "160 kcal",
+      "ingredients": "Rice, Urad Dal, Tamarind, Vegetables, Spices"
+    },
+    {
+      "item": "Dosa",
+      "price": "₹40",
+      "photo": "assets/dosa.jpg",
+      "calories": "180 kcal",
+      "ingredients": "Rice, Urad Dal, Salt, Oil"
+    },
+    {
+      "item": "Uttapam",
+      "price": "₹45",
+      "photo": "assets/uttapam.jpg",
+      "calories": "200 kcal",
+      "ingredients": "Rice, Urad Dal, Onion, Tomato, Green Chilli"
+    }
+  ]
+}

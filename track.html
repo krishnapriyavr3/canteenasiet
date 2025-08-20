@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Track Order</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="container navbar">
+      <div class="brand"><div class="logo"></div> <div>Track Order</div></div>
+      <div class="nav-right"><a class="btn btn-ghost" href="index.html">Menu</a></div>
+    </div>
+  </header>
+
+  <main class="container section">
+    <div class="panel shadow" style="max-width:640px; margin:0 auto;">
+      <label class="text-muted">Enter your Order ID</label>
+      <input class="input" id="track-id" placeholder="e.g. ORD123456" />
+      <button class="btn btn-accent" style="margin-top:.6rem;" onclick="lookup()">Check Status</button>
+      <div id="result" style="margin-top:1rem;"></div>
+    </div>
+
+    <section class="panel shadow" style="margin-top:1rem;">
+      <h3>Recent Orders</h3>
+      <table>
+        <thead><tr><th>Order ID</th><th>Status</th><th>Total</th><th>When</th></tr></thead>
+        <tbody id="recent"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+  <script>
+    function lookup(){
+      const id = document.getElementById('track-id').value.trim();
+      const list = APP.getPlacedOrders();
+      const o = list.find(x => x.id===id);
+      const box = document.getElementById('result');
+      if(!o){ box.innerHTML = '<p class="text-muted">Order not found.</p>'; return; }
+      box.innerHTML = '<p><strong>Status:</strong> '+o.status+' — <strong>Total:</strong> '+APP.fmtRupees(o.total)+'</p>' +
+        '<p class="text-muted">Items: '+o.items.map(i=> i.qty+'× '+i.name).join(', ')+'</p>';
+    }
+
+    function loadRecent(){
+      const list = APP.getPlacedOrders().slice(-10).reverse();
+      const tb = document.getElementById('recent'); tb.innerHTML='';
+      if(!list.length){ tb.innerHTML = '<tr><td colspan="4" class="text-muted">No orders yet.</td></tr>'; return; }
+      list.forEach(o=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td>'+o.id+'</td><td>'+o.status+'</td><td>'+APP.fmtRupees(o.total)+'</td><td>'+new Date(o.at).toLocaleString()+'</td>';
+        tb.appendChild(tr);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', loadRecent);
+  </script>
+</body>
+</html>

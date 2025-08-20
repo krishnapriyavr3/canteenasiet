@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Your Cart</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="cart-badge" onclick="location.href='cart.html'">🛒 Cart (<span id="cart-count">0</span>)</div>
+  <header>
+    <div class="container navbar">
+      <div class="brand"><div class="logo"></div> <div>Your Cart</div></div>
+      <div class="nav-right">
+        <button id="theme-toggle" class="theme-toggle" onclick="APP.toggleDarkMode()">🌙</button>
+        <a class="btn btn-ghost" href="index.html">Menu</a>
+        <a class="btn btn-ghost" href="summary.html">Summary</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container section">
+    <div class="panel shadow">
+      <table id="cartTable">
+        <thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div id="grandTotal" style="text-align:right; font-size:1.1rem; font-weight:700; margin-top:1rem;"></div>
+      
+      <div class="row" style="justify-content:flex-end; margin-top:1rem;">
+        <button class="btn btn-danger" onclick="clearCart()">Clear Cart</button>
+        <a class="btn btn-accent" href="payment.html">Confirm Order</a>
+        <a class="btn" href="index.html">Back to Menu</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      updateCartCount();
+      loadCart();
+    });
+
+    function loadCart() {
+      const cart = APP.getCart();
+      const tbody = document.querySelector('#cartTable tbody');
+      const grandTotalEl = document.getElementById('grandTotal');
+      let grandTotal = 0;
+
+      if (cart.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;" class="text-muted">Your cart is empty.</td></tr>';
+        grandTotalEl.textContent = '';
+        return;
+      }
+
+      tbody.innerHTML = '';
+      cart.forEach((item, index) => {
+        const unit = APP.parseRupees(item.price);
+        const total = unit * item.qty; 
+        grandTotal += total;
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${item.itemName}</td>
+          <td>
+            <div class="quantity-editor">
+              <button class="btn btn-danger" onclick="updateQuantity(${index}, -1)">-</button>
+              <span>${item.qty}</span>
+              <button class="btn btn-accent" onclick="updateQuantity(${index}, 1)">+</button>
+            </div>
+          </td>
+          <td>${item.price}</td>
+          <td>${APP.fmtRupees(total)}</td>
+          <td><button class="btn btn-danger btn-ghost" onclick="updateQuantity(${index}, -Infinity)">Remove</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+      grandTotalEl.textContent = 'Grand Total: ' + APP.fmtRupees(grandTotal);
+    }
+
+    function updateQuantity(index, change) {
+        const cart = APP.getCart();
+        if (!cart[index]) return;
+
+        if (change === -Infinity) {
+            cart.splice(index, 1);
+        } else {
+            cart[index].qty += change;
+            if (cart[index].qty <= 0) {
+                cart.splice(index, 1);
+            }
+        }
+        
+        APP.setCart(cart);
+        loadCart();
+        updateCartCount();
+    }
+    
+    function clearCart(){
+      APP.setCart([]);
+      loadCart();
+      updateCartCount();
+    }
+  </script>
+</body>
+</html>

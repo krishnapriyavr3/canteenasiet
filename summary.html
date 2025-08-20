@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Order Summary - ASIET Canteen</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="cart-badge" onclick="location.href='cart.html'">🛒 Cart (<span id="cart-count">0</span>)</div>
+  <header>
+    <div class="container navbar">
+      <div class="brand"><div class="logo"></div> <div>Your Order Summary</div></div>
+      <div class="nav-right"><a class="btn btn-ghost" href="index.html">Menu</a></div>
+    </div>
+  </header>
+
+  <main class="container section">
+    <section class="panel shadow" id="receipt">
+      <h2 style="margin-bottom:.6rem;">ASIET Canteen Receipt</h2>
+      <p><strong>Date:</strong> <span id="print-date"></span></p>
+      <div id="order-summary"></div>
+      <div class="row" style="margin-top:1rem;">
+        <a class="btn" href="index.html">Back to Menu</a>
+        <button class="btn btn-ghost" onclick="printOrder()">Print Receipt</button>
+        <a class="btn btn-accent" href="payment.html">Confirm & Pay</a>
+      </div>
+    </section>
+  </main>
+
+<script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      updateCartCount();
+      document.getElementById('print-date').textContent = new Date().toLocaleDateString();
+      loadSummary();
+    });
+
+    function loadSummary() {
+      const summarySection = document.getElementById('order-summary');
+      const cart = APP.getCart(); // Use getCart()
+
+      if (!cart.length) {
+        summarySection.innerHTML = '<p class="text-muted">No items in your cart.</p>';
+        return;
+      }
+
+      let totalAmount = 0;
+      let html = '<ul style="list-style:none; padding:0; display:grid; gap:.5rem;">';
+      cart.forEach(item => {
+        const itemPrice = APP.parseRupees(item.price);
+        const itemTotal = itemPrice * item.qty;
+        totalAmount += itemTotal;
+        html += `
+          <li class="panel" style="padding:.7rem;">
+            <strong>${item.qty} × ${item.itemName}</strong><br>
+            Price: ${item.price} each · Total: ${APP.fmtRupees(itemTotal)}
+          </li>`;
+      });
+      html += `</ul><p style="font-weight:bold; margin-top:1rem;">Grand Total: ${APP.fmtRupees(totalAmount)}</p>`;
+      summarySection.innerHTML = html;
+    }
+
+    function printOrder() {
+      const printContents = document.getElementById('receipt').innerHTML;
+      const original = document.body.innerHTML;
+      document.body.innerHTML = printContents;
+      window.print();
+      document.body.innerHTML = original;
+      location.reload();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - ASIET Canteen</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="container navbar">
+      <div class="brand"><div class="logo"></div> <div>Admin Dashboard</div></div>
+      <div class="nav-right">
+        <a class="btn btn-ghost" href="index.html">View Menu</a>
+        <button class="btn btn-danger" onclick="APP.logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container section">
+    <section class="panel shadow">
+      <h2>Pending Orders</h2>
+      <table id="orders-table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section class="panel shadow" style="margin-top: 2rem;">
+        <h2>User Feedback</h2>
+        <div id="feedback-list"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

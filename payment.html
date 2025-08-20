@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Payment - ASIET Canteen</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="cart-badge" onclick="location.href='cart.html'">🛒 Cart (<span id="cart-count">0</span>)</div>
+  <header>
+    <div class="container navbar">
+      <div class="brand"><div class="logo"></div> <div>Secure Payment</div></div>
+      <div class="nav-right"><a class="btn btn-ghost" href="index.html">Menu</a></div>
+    </div>
+  </header>
+
+  <main class="container section">
+    <div class="panel shadow" id="payment-details">
+      <h2>Your Total is: <span id="payment-amount">₹0.00</span></h2>
+      <p class="text-muted">Click to complete your order. (Demo checkout)</p>
+      <button class="btn btn-accent" style="margin-top:1rem" onclick="processPayment()">Pay Now</button>
+    </div>
+
+    <div class="panel shadow hidden" id="payment-success">
+      <h2>✅ Payment Successful!</h2>
+      <p>Your order has been confirmed and sent to the canteen.</p>
+      <p>Order ID: <strong id="order-id"></strong></p>
+      <p>Estimated waiting time: <strong id="wait-time"></strong> minutes.</p>
+      <div class="row" style="margin-top:.6rem;">
+        <a class="btn" href="track.html">Track Order</a>
+        <a class="btn btn-ghost" href="index.html">Back to Menu</a>
+      </div>
+    </div>
+  </main>
+
+<script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      updateCartCount();
+      const cart = APP.getCart(); // Use getCart()
+      const total = cart.reduce((s, item) => s + (APP.parseRupees(item.price) * item.qty), 0);
+      document.getElementById('payment-amount').textContent = APP.fmtRupees(total);
+    });
+
+    function processPayment(){
+      const cart = APP.getCart(); // Use getCart()
+      if(!cart.length){ alert('Your cart is empty.'); return; }
+
+      const totalItems = cart.reduce((s,i) => s + i.qty, 0);
+      const wait = totalItems * 5; 
+      const id = APP.uid();
+      
+      const totalAmount = cart.reduce((s, item) => s + (APP.parseRupees(item.price) * item.qty), 0);
+
+      const user = APP.getUser() || { name:'Guest', role:'user' };
+      const placed = APP.getPlacedOrders();
+      
+      const orderItems = cart.map(item => ({ name: item.itemName, qty: item.qty, price: item.price, total: APP.fmtRupees(APP.parseRupees(item.price) * item.qty) }));
+
+      placed.push({
+        id,
+        user: user.name || 'Guest',
+        items: orderItems,
+        total: totalAmount,
+        status:'Pending',
+        at: new Date().toISOString()
+      });
+      APP.setPlacedOrders(placed);
+      
+      APP.setCart([]);
+      updateCartCount();
+
+      document.getElementById('payment-details').classList.add('hidden');
+      document.getElementById('payment-success').classList.remove('hidden');
+      document.getElementById('order-id').textContent = id;
+      document.getElementById('wait-time').textContent = wait;
+    }
+  </script>
+</body>
+</html>
