@@ -6,43 +6,46 @@
   <title>Login - ASIET Canteen</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <header>
-    <div class="container navbar">
-      <div class="brand"><div class="logo"></div> <div>ASIET Canteen</div></div>
-      <a class="btn btn-ghost" href="index.html">← Back to Menu</a>
-    </div>
-  </header>
+<body class="login-page">
 
-  <main class="container section">
-    <div class="login-container panel shadow">
-        <div class="brand"><div class="logo"></div> <div>Welcome Back!</div></div>
-        <p class="text-muted" style="margin-bottom:1.5rem;">Sign in to continue.</p>
+  <div class="login-container">
+    <div class="login-branding">
+      <div class="logo"></div>
+      <h2>Welcome Back!</h2>
+      <p>Your favorite meals are just a click away.</p>
+    </div>
+
+    <div class="login-form-wrapper">
+      <h3>Sign In</h3>
+      <p class="text-muted">Enter your credentials to access your account.</p>
       
-        <form onsubmit="doLogin(event)">
-            <div class="input-group">
-                <label for="username">Username</label>
-                <input class="input" id="username" placeholder="e.g., admin" required />
-            </div>
-            
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input class="input" type="password" id="password" placeholder="e.g., admin123" required />
-            </div>
+      <form class="login-form" onsubmit="doLogin(event)">
+        <div class="input-group">
+          <label for="username">Username</label>
+          <input class="input" id="username" placeholder="e.g., admin or user" required />
+        </div>
+        
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input class="input" type="password" id="password" placeholder="e.g., admin123 or user123" required />
+        </div>
 
-            <div class="row" style="justify-content:space-between; align-items: center; margin-top: 0.5rem;">
-                <label style="font-size: 0.9rem;"><input type="checkbox"> Remember Me</label>
-                <a href="forgot-password.html" style="font-size: 0.9rem; color: var(--primary);">Forgot Password?</a>
-            </div>
+        <div class="row" style="justify-content:space-between; align-items: center; margin-top: 0.5rem; font-size: 0.9rem;">
+          <label><input type="checkbox"> Remember Me</label>
+          <a href="forgot-password.html">Forgot Password?</a>
+        </div>
 
-            <button class="btn btn-accent" style="margin-top:1.5rem; width: 100%;" type="submit">Login</button>
-            
-            <p class="text-muted" style="margin-top:1.5rem; font-size: 0.9rem;">
-                Don't have an account? <a href="signup.html" style="color: var(--primary);">Sign Up</a>
-            </p>
-        </form>
+        <button class="btn btn-primary" style="margin-top:1.5rem;" type="submit">Login</button>
+        
+        <p class="login-options">
+          Don't have an account? <a href="signup.html">Sign Up</a>
+        </p>
+        <p class="login-options" style="margin-top: 0.5rem;">
+          <a href="index.html">← Back to Menu</a>
+        </p>
+      </form>
     </div>
-  </main>
+  </div>
 
   <script src="app.js"></script>
   <script>
@@ -51,9 +54,6 @@
       const user = document.getElementById('username').value.trim();
       const pass = document.getElementById('password').value.trim();
 
-      // --- Demo Login Logic ---
-      // For a real app, this would be a server call.
-      // Here, we just use hardcoded values for the demo.
       if (user === 'admin' && pass === 'admin123') {
         localStorage.setItem('authUser', JSON.stringify({ name: 'Admin User', role: 'admin' }));
         location.href = 'admin.html';
@@ -61,7 +61,7 @@
         localStorage.setItem('authUser', JSON.stringify({ name: 'Demo User', role: 'user' }));
         location.href = 'index.html';
       } else {
-        alert('Invalid credentials. Try username "admin" with password "admin123" or "user" with "user123".');
+        APP.showToast('Invalid credentials. Try "admin" / "admin123".', 'error');
       }
     }
   </script>

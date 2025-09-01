@@ -5,33 +5,99 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ASIET Canteen</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .feedback-menu {
+      position: fixed; top: 0; right: -320px; width: 300px; height: 100%;
+      background: var(--bg); box-shadow: -4px 0 15px rgba(0,0,0,0.15);
+      padding: 1rem; z-index: 1050; transition: right 0.3s ease-in-out;
+      display: flex; flex-direction: column; gap: 1rem; overflow-y: auto;
+    }
+    .feedback-menu.open { right: 0; }
+    .feedback-menu h3 { margin-top: 0; }
+    
+    .hero {
+      text-align: center;
+      padding: 4rem 1rem;
+      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1974&auto=format&fit=crop') no-repeat center center;
+      background-size: cover;
+      color: white;
+      border-radius: 12px;
+      margin-top: 1rem;
+    }
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    .hero p {
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+    }
+    .hero .btn {
+        padding: 0.8rem 1.8rem;
+        font-weight: bold;
+    }
+
+    .popular-grid {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(280px, 1fr);
+        gap: 1rem;
+        overflow-x: auto;
+        padding-bottom: 1rem;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .popular-grid::-webkit-scrollbar { display: none; }
+    
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+    .card .actions {
+        gap: 0.5rem;
+    }
+    .card .actions .btn {
+        padding: 0.5rem;
+        width: 38px;
+        height: 38px;
+        font-size: 1.2rem;
+        line-height: 1;
+        border-radius: 50%;
+    }
+  </style>
 </head>
 <body>
   <button class="menu-toggle btn-ghost" onclick="toggleMenu()">☰ Menu</button>
   <aside class="side-menu">
     <header class="container"><div class="brand"><div class="logo"></div> <span> </span></div></header>
     <nav class="side-list">
-      <button class="active" onclick="filterCategory('all', this)">All</button>
-      <button onclick="filterCategory('combo', this)">Combos</button>
-      <button onclick="filterCategory('breakfast', this)">Breakfast</button>
-      <button onclick="filterCategory('snacks', this)">Snacks</button>
-      <button onclick="filterCategory('drinks', this)">Drinks</button>
-      <button onclick="filterCategory('lunch', this)">Lunch</button>
+      <button class="active" onclick="filterCategory('all', this)" disabled>All</button>
+      <button onclick="filterCategory('combo', this)" disabled>Combos</button>
+      <button onclick="filterCategory('breakfast', this)" disabled>Breakfast</button>
+      <button onclick="filterCategory('snacks', this)" disabled>Snacks</button>
+      <button onclick="filterCategory('drinks', this)" disabled>Drinks</button>
+      <button onclick="filterCategory('lunch', this)" disabled>Lunch</button>
     </nav>
-    <section class="section feedback panel">
-      <h3>Complaints & Compliments</h3>
-      <p class="text-muted" style="margin-bottom:.6rem;">Tell us what you loved or what we can improve.</p>
-      <form class="row" onsubmit="submitFeedback(event)">
-        <input id="fb-name" class="input" placeholder="Your name (optional)" style="flex:1 1 200px;" />
-        <select id="fb-type" class="input" style="flex:1 1 160px;">
-          <option value="compliment">Compliment</option>
-          <option value="complaint">Complaint</option>
-          <option value="suggestion">Suggestion</option>
-        </select>
-        <textarea id="fb-msg" class="input" placeholder="Write your message..." style="flex:1 1 100%;"></textarea>
-        <button class="btn btn-accent" type="submit">Send Feedback</button>
-      </form>
-    </section>
+  </aside>
+
+  <aside class="feedback-menu" id="feedback-menu">
+    <h3>Comments</h3>
+    <p class="text-muted" style="margin-bottom:.6rem;">Tell us what you loved or what we can improve.</p>
+    <form class="row" onsubmit="submitFeedback(event)">
+      <input id="fb-name" class="input" placeholder="Your name (optional)" style="flex:1 1 100%;" />
+      <select id="fb-type" class="input" style="flex:1 1 100%;">
+        <option value="compliment">Compliment</option>
+        <option value="complaint">Complaint</option>
+        <option value="suggestion">Suggestion</option>
+      </select>
+      <textarea id="fb-msg" class="input" placeholder="Write your message..." style="flex:1 1 100%;"></textarea>
+      <button class="btn btn-accent" type="submit" style="flex:1 1 100%;">Send Feedback</button>
+      <button class="btn btn-ghost" type="button" onclick="toggleFeedbackMenu()" style="flex:1 1 100%;">Close</button>
+    </form>
   </aside>
 
   <div id="cart-badge" onclick="location.href='cart.html'">🛒 Cart (<span id="cart-count">0</span>)</div>
@@ -43,6 +109,7 @@
         <button id="theme-toggle" class="theme-toggle" onclick="APP.toggleDarkMode()">🌙</button>
         <a class="btn btn-ghost" href="summary.html">Summary</a>
         <a class="btn btn-ghost" href="track.html">Track Order</a>
+        <button class="btn btn-ghost" onclick="toggleFeedbackMenu()">Comments</button>
         <a class="btn btn-ghost" href="admin.html">Admin</a>
         <a class="btn btn-ghost" href="login.html">Login</a>
       </div>
@@ -50,36 +117,35 @@
   </header>
 
   <main class="container">
-    <section class="section">
-        <input class="input shadow" id="search-box" placeholder="Search by name, ingredients, or category..." />
-    </section>
-    
-    <section class="section sort-container">
-      <select id="sort-menu" class="input" onchange="applySort()">
-          <option value="default">Sort by: Default</option>
-          <option value="price-asc">Price: Low to High</option>
-          <option value="price-desc">Price: High to Low</option>
-          <option value="name-asc">Name: A-Z</option>
-          <option value="name-desc">Name: Z-A</option>
-      </select>
+    <section class="hero">
+      <h1>Taste the Tradition, Feel the Comfort</h1>
+      <p>Fresh, hygienic, and delicious meals served daily.</p>
+      <a href="#menu-section" class="btn btn-accent">Explore Menu</a>
     </section>
 
+    <section class="section">
+        <h2>🔥 Popular Right Now</h2>
+        <div id="popular-grid" class="popular-grid"></div>
+    </section>
+    
     <section class="section">
       <div class="text-muted" id="date"></div>
       <h2 style="margin:.4rem 0 1rem;">🌟 Combo Specials</h2>
       <div id="combo-section" class="combo-card"></div>
     </section>
     
-    <section class="section">
-        <h2>Menu</h2>
-        <div id="menu-grid" class="card-grid" aria-live="polite"></div>
+    <section class="section" id="menu-section"> 
+        <h2>Our Menu</h2>
         <div class="category-filters" id="category-filters">
-            <button class="btn active" onclick="filterCategory('all', this)">All</button>
-            <button class="btn" onclick="filterCategory('combo', this)">Combos</button>
-            <button class="btn" onclick="filterCategory('breakfast', this)">Breakfast</button>
-            <button class="btn" onclick="filterCategory('snacks', this)">Snacks</button>
-            <button class="btn" onclick="filterCategory('drinks', this)">Drinks</button>
-            <button class="btn" onclick="filterCategory('lunch', this)">Lunch</button>
+            <button class="btn active" onclick="filterCategory('all', this)" disabled>All</button>
+            <button class="btn" onclick="filterCategory('combo', this)" disabled>Combos</button>
+            <button class="btn" onclick="filterCategory('breakfast', this)" disabled>Breakfast</button>
+            <button class="btn" onclick="filterCategory('snacks', this)" disabled>Snacks</button>
+            <button class="btn" onclick="filterCategory('drinks', this)" disabled>Drinks</button>
+            <button class="btn" onclick="filterCategory('lunch', this)" disabled>Lunch</button>
+        </div>
+        <div id="menu-grid" class="card-grid" aria-live="polite">
+          <p class="text-muted" style="text-align:center; padding: 2rem 0;">Loading menu...</p>
         </div>
     </section>
 
@@ -119,7 +185,10 @@
     document.getElementById('year').textContent = new Date().getFullYear();
 
     fetch('menu.json')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) { throw new Error('Network response was not ok'); }
+        return res.json();
+      })
       .then(data => {
         const today = new Date();
         document.getElementById('date').textContent = `Menu for ${today.toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'})}`;
@@ -135,15 +204,34 @@
             document.getElementById('combo-section').style.display = 'none';
             allMenuItems = menuItems;
         }
+        
+        document.querySelectorAll('.side-list button, .category-filters .btn').forEach(b => {
+            b.disabled = false;
+        });
+
+        renderPopularItems(menuItems);
         currentlyDisplayedItems = [...allMenuItems];
-        renderMenu(currentlyDisplayedItems);
+        applyFiltersAndSort(); 
         updateCartCount();
         showCartSummary();
+      })
+      .catch(error => {
+          console.error('Failed to load menu:', error);
+          document.getElementById('menu-grid').innerHTML = '<p class="text-muted" style="text-align:center; padding: 2rem 0; color: var(--danger);">Could not load menu. Please check your connection and try again.</p>';
       });
+      
+    function renderPopularItems(menu) {
+        const container = document.getElementById('popular-grid');
+        if(!container) return;
+        const shuffled = [...menu].filter(i => i.category !== 'combo').sort(() => 0.5 - Math.random());
+        const popular = shuffled.slice(0, 5);
+        container.innerHTML = popular.map((item, idx) => cardTemplate(item, `pop${idx}`)).join('');
+    }
 
     function renderCombo(combo){
       const imageStackHTML = combo.photos.map(p => `<img src="${p}" alt="Combo item" onerror="this.style.display='none';"/>`).join('');
       const photo = combo.photos[1] || imagePlaceholder;
+      const itemNameEscaped = combo.item.replace(/'/g, "\\'");
       document.getElementById('combo-section').innerHTML = `
         <div class="row" style="align-items:center; justify-content:center;">
           <div style="flex:1 1 60%">
@@ -151,9 +239,8 @@
             <div class="text-muted">${combo.description}</div>
             <div class="combo-price" style="margin:.3rem 0 0.6rem;">${combo.price} <span class="badge">10% OFF</span></div>
             <div class="row">
-              <button class="btn" onclick="showDetails('${combo.item}', '${combo.price}', '${combo.calories}', '${combo.ingredients}', '${photo}')">View Details</button>
-              <button class="btn btn-accent" onclick="placeOrderAndShowSummary('${combo.item}', 1, '${combo.price}')">Place Order</button>
-              <button class="btn btn-warn" onclick="addToCart('${combo.item}', 1, '${combo.price}')">Add to Cart</button>
+              <button class="btn" onclick="showDetails('${itemNameEscaped}')">View Details</button>
+              <button class="btn btn-accent" onclick="addToCart(1, '${itemNameEscaped}')">Add to Cart</button>
             </div>
           </div>
           <div style="flex:1 1 40%; display:flex; justify-content:center;">
@@ -163,21 +250,22 @@
       `;
     }
 
-    function cardTemplate(item, idx, term=''){
+    function cardTemplate(item, idSuffix, term=''){
       const isCombo = item.category === 'combo';
-      const photo = isCombo ? item.photos[1] : item.photo;
+      const photo = isCombo ? (item.photos ? item.photos[1] : null) : item.photo;
+      const itemNameEscaped = item.item.replace(/'/g, "\\'");
+
       return `
-        <div class="card" data-category="${item.category}" style="animation-delay: ${idx * 50}ms">
-          <img src="${photo}" alt="${item.item}" loading="lazy" onerror="this.src=imagePlaceholder; this.onerror=null;">
+        <div class="card" data-category="${item.category}" style="animation-delay: ${idSuffix * 50}ms">
+          <img src="${photo || imagePlaceholder}" alt="${item.item}" loading="lazy" onerror="this.src='${imagePlaceholder}'; this.onerror=null;">
           <div class="card-details">
             <div class="title">${highlightMatch(item.item, term)}</div>
             <div class="price">${item.price}</div>
             <div class="calories">${item.calories} · <span class="badge">${item.category}</span></div>
             <div class="actions">
-              <button class="btn btn-ghost" onclick="showDetails('${item.item}', '${item.price}', '${item.calories}', '${item.ingredients}', '${photo}')">Details</button>
-              <button class="btn btn-accent" onclick="placeOrderAndShowSummary('${item.item}', document.getElementById('qty${idx}').value, '${item.price}')">Place Order</button>
-              <button class="btn btn-warn" onclick="addToCart('${item.item}', document.getElementById('qty${idx}').value, '${item.price}')">Add to Cart</button>
-              <input class="qty" type="number" min="1" max="10" value="1" id="qty${idx}" aria-label="Quantity">
+              <input class="qty" type="number" min="1" max="10" value="1" id="qty${idSuffix}" aria-label="Quantity" style="flex-grow:1;">
+              <button title="View Details" class="btn btn-ghost" onclick="showDetails('${itemNameEscaped}')">ℹ️</button>
+              <button title="Add to Cart" class="btn btn-accent" onclick="addToCart(document.getElementById('qty${idSuffix}').value, '${itemNameEscaped}')">🛒</button>
             </div>
           </div>
         </div>
@@ -186,19 +274,26 @@
 
     function renderMenu(list, term=''){
       const wrap = document.getElementById('menu-grid');
-      if (!list || list.length === 0) { wrap.innerHTML = '<p class="text-muted">No menu items found.</p>'; return; }
+      if (!list || list.length === 0) { 
+        wrap.innerHTML = '<p class="text-muted" style="text-align:center; padding: 2rem 0;">No items match your filter.</p>'; 
+        return; 
+      }
       wrap.innerHTML = '';
-      const itemsToRender = list.filter(item => item.category !== 'combo');
-      itemsToRender.forEach((item, idx) => wrap.insertAdjacentHTML('beforeend', cardTemplate(item, idx, term)));
+      list.forEach((item, idx) => wrap.insertAdjacentHTML('beforeend', cardTemplate(item, idx, term)));
     }
     
     function applyFiltersAndSort() {
-        const term = document.getElementById('search-box').value.trim().toLowerCase();
+        if (allMenuItems.length === 0) return;
+
+        const searchBox = document.getElementById('search-box');
+        const sortMenu = document.getElementById('sort-menu');
+        const term = searchBox ? searchBox.value.trim().toLowerCase() : '';
+        const sortBy = sortMenu ? sortMenu.value : 'default';
+
         const cat = selectedCategory.value;
-        const sortBy = document.getElementById('sort-menu').value;
 
         let filtered = allMenuItems.filter(i => {
-            const matchesTerm = (i.item.toLowerCase().includes(term) || (i.ingredients && i.ingredients.toLowerCase().includes(term)));
+            const matchesTerm = (term === '') || (i.item.toLowerCase().includes(term) || (i.ingredients && i.ingredients.toLowerCase().includes(term)));
             const matchesCategory = (cat === 'all') || (i.category === cat);
             return matchesTerm && matchesCategory;
         });
@@ -206,9 +301,9 @@
         const comboSection = document.getElementById('combo-section');
         const mainCombo = allMenuItems.find(i => i.category === 'combo');
         if(mainCombo && (cat === 'all' || cat === 'combo') && term === ''){
-            comboSection.classList.remove('hidden');
+            comboSection.style.display = '';
         } else {
-            comboSection.classList.add('hidden');
+            comboSection.style.display = 'none';
         }
 
         if (sortBy !== 'default') {
@@ -224,51 +319,57 @@
         }
         
         currentlyDisplayedItems = filtered;
-        renderMenu(currentlyDisplayedItems, term);
+        const gridItems = currentlyDisplayedItems.filter(i => i.category !== 'combo');
+        renderMenu(gridItems, term);
     }
     
-    document.getElementById('search-box').addEventListener('input', () => { setTimeout(applyFiltersAndSort, 150); });
+    document.getElementById('search-box')?.addEventListener('input', () => { setTimeout(applyFiltersAndSort, 150); });
     
-    function applySort() {
-        applyFiltersAndSort();
-    }
+    function applySort() { applyFiltersAndSort(); }
 
     function filterCategory(cat, btn){
       selectedCategory.value = cat;
       document.querySelectorAll('.side-list button, .category-filters .btn').forEach(b => {
           b.classList.toggle('active', b.textContent.toLowerCase() === cat);
       });
-      if (btn && btn.closest('.side-menu')) {
-          toggleMenu();
-      }
+      if (btn && btn.closest('.side-menu')) { toggleMenu(); }
       applyFiltersAndSort();
     }
-    window.filterCategory = filterCategory;
-
-    function addToCart(itemName, qty, price){
+    
+    function addToCart(qty, itemName){
+      const item = allMenuItems.find(i => i.item === itemName);
+      if (!item) { return APP.showToast('Could not find item.', 'error'); }
+      
       qty = parseInt(qty);
-      if(isNaN(qty)||qty<1){ APP.showToast('Enter a valid quantity.', 'error'); return; }
+      if(isNaN(qty) || qty < 1){ return APP.showToast('Enter a valid quantity.', 'error'); }
+      
       const cart = APP.getCart();
-      const existing = cart.find(i=>i.itemName===itemName);
+      const existing = cart.find(i => i.itemName === item.item);
       if(existing) { existing.qty += qty; }
-      else { cart.push({ itemName, qty, price }); }
+      else { cart.push({ itemName: item.item, qty, price: item.price }); }
+      
       APP.setCart(cart);
-      APP.showToast(`${qty} × ${itemName} added to cart!`);
-      window.location.href = 'cart.html';
+      APP.showToast(`${qty} × ${item.item} added to cart!`, 'success');
+      setTimeout(() => { window.location.href = 'cart.html'; }, 500);
     }
 
-    function placeOrderAndShowSummary(itemName, qty, price) {
+    function placeOrderAndShowSummary(qty, itemName) {
+        const item = allMenuItems.find(i => i.item === itemName);
+        if (!item) { return APP.showToast('Could not find item.', 'error'); }
+
         qty = parseInt(qty);
-        if(isNaN(qty)||qty<1){ APP.showToast('Enter a valid quantity.', 'error'); return; }
+        if(isNaN(qty) || qty < 1){ return APP.showToast('Enter a valid quantity.', 'error'); }
+
         const cart = APP.getCart();
-        const existing = cart.find(i=>i.itemName===itemName);
+        const existing = cart.find(i => i.itemName === item.item);
         if(existing) { existing.qty += qty; }
-        else { cart.push({ itemName, qty, price }); }
+        else { cart.push({ itemName: item.item, qty, price: item.price }); }
+
         APP.setCart(cart);
         updateCartCount();
         APP.pulseCart();
         showCartSummary();
-        APP.showToast(`${qty} × ${itemName} added to your summary below.`);
+        APP.showToast(`${qty} × ${item.item} ready in summary.`, 'success');
         document.getElementById('current-order').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
@@ -300,25 +401,55 @@
       APP.showToast('Cart cleared.', 'error');
     }
 
-    function showDetails(name, price, calories, ingredients, photo) {
-      document.getElementById('modal-title').textContent = name;
-      document.getElementById('modal-price').textContent = price;
-      document.getElementById('modal-calories').textContent = calories;
-      document.getElementById('modal-ingredients').textContent = ingredients;
+    function showDetails(itemName) {
+      const item = allMenuItems.find(i => i.item === itemName);
+      if (!item) return;
+
+      const isCombo = item.category === 'combo';
+      const photo = isCombo ? (item.photos ? item.photos[1] : null) : item.photo;
+
+      document.getElementById('modal-title').textContent = item.item;
+      document.getElementById('modal-price').textContent = item.price;
+      document.getElementById('modal-calories').textContent = item.calories;
+      document.getElementById('modal-ingredients').textContent = item.ingredients;
       document.getElementById('modal-img').src = photo || imagePlaceholder;
       document.getElementById('details-modal').style.display = 'flex';
     }
     
-    function closeModal() {
-        document.getElementById('details-modal').style.display = 'none';
-    }
+    function closeModal() { document.getElementById('details-modal').style.display = 'none'; }
+    function toggleFeedbackMenu() { document.getElementById('feedback-menu').classList.toggle('open'); }
 
+    window.filterCategory = filterCategory;
     window.placeOrderAndShowSummary = placeOrderAndShowSummary;
     window.showDetails = showDetails;
     window.clearCart = clearCart;
     window.closeModal = closeModal;
-    // Expose addToCart to the global scope so it can be called from HTML
     window.addToCart = addToCart;
+    window.toggleFeedbackMenu = toggleFeedbackMenu;
+    
   </script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+  // PASTE THE firebaseConfig OBJECT YOU COPIED FROM THE FIREBASE WEBSITE HERE
+  const firebaseConfig = {
+    apiKey: "AIza...",
+    authDomain: "your-project-id.firebaseapp.com",
+    projectId: "your-project-id",
+    storageBucket: "your-project-id.appspot.com",
+    messagingSenderId: "...",
+    appId: "..."
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore(); // This is our database object
+</script>
+
+<script src="app.js"></script>
+<script>
+    // ... your page's inline script ...
+</script>
 </body>
 </html>

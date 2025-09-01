@@ -12,7 +12,10 @@ const APP = {
     location.href = 'login.html';
   },
   fmtRupees(n){ return '₹' + Number(n).toFixed(2); },
-  parseRupees(text){ return parseInt(String(text).replace(/[^\d]/g,''))||0; },
+  parseRupees(text){ 
+    // This is the corrected function for the cart total
+    return parseFloat(String(text).replace(/[^0-9.]/g, '')) || 0; 
+  },
   uid(prefix='ORD'){
     return `${prefix}${Date.now().toString().slice(-6)}${Math.floor(Math.random()*90+10)}`;
   },
@@ -36,26 +39,83 @@ const APP = {
     const b = document.getElementById('cart-badge');
     if(!b) return;
     b.classList.add('active'); setTimeout(()=>b.classList.remove('active'), 350);
+  },
+  toggleDarkMode(){
+    const body = document.body;
+    body.classList.toggle('dark-mode');
+    const isDark = body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+      themeToggle.textContent = isDark ? '☀️' : '🌙';
+    }
+  },
+  applyTheme(){
+    if (localStorage.getItem('darkMode') === 'enabled') {
+      document.body.classList.add('dark-mode');
+      const themeToggle = document.getElementById('theme-toggle');
+      if (themeToggle) {
+        themeToggle.textContent = '☀️';
+      }
+    }
+  },
+  showToast(message, type = 'info') {
+    const icons = { info: 'ℹ️', success: '✅', error: '❌' };
+    const colors = { info: '#0275d8', success: '#5cb85c', error: '#d9534f' };
+    
+    const toast = document.createElement('div');
+    toast.innerHTML = `${icons[type] || icons.info} &nbsp; ${message}`;
+    
+    Object.assign(toast.style, {
+      position: 'fixed',
+      bottom: '20px',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      backgroundColor: colors[type] || colors.info,
+      color: 'white',
+      padding: '12px 20px',
+      borderRadius: '50px',
+      zIndex: '1000',
+      opacity: '0',
+      transition: 'opacity 0.4s ease, bottom 0.4s ease',
+      boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+      fontWeight: '500'
+    });
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.style.opacity = '1';
+      toast.style.bottom = '40px';
+    }, 10);
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.bottom = '20px';
+      setTimeout(() => {
+        if(document.body.contains(toast)) document.body.removeChild(toast);
+      }, 400);
+    }, 3500);
   }
 };
 
-// ======= Cart helpers (shared) =======
 function updateCartCount(){
   const cart = APP.getCart();
   const count = cart.reduce((s,i)=>s + Number(i.qty||0), 0);
   const el = document.getElementById('cart-count');
   if(el) el.textContent = count;
 }
-document.addEventListener('DOMContentLoaded', updateCartCount);
+document.addEventListener('DOMContentLoaded', ()=>{
+  updateCartCount();
+  APP.applyTheme();
+});
 
-// ======= Slide menu toggling =======
 function toggleMenu(){
   const m = document.querySelector('.side-menu');
   if(!m) return;
   m.classList.toggle('open');
 }
 
-// ======= Feedback handling (shared) =======
 function submitFeedback(ev){
   ev.preventDefault();
   const name = document.getElementById('fb-name').value.trim();
@@ -66,17 +126,16 @@ function submitFeedback(ev){
   list.push({ id: APP.uid('FB'), name, type, msg, at: new Date().toISOString() });
   APP.setFeedback(list);
   ev.target.reset();
-  alert('Thank you for your feedback!');
+  APP.showToast('Thank you for your feedback!', 'success');
+  toggleFeedbackMenu();
 }
 
-// ======= Search helper =======
 function highlightMatch(text, term){
   if(!term) return text;
   const re = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'ig');
   return text.replace(re, '<mark>$1</mark>');
 }
 
-// Expose globally
 window.APP = APP;
 window.updateCartCount = updateCartCount;
 window.toggleMenu = toggleMenu;

@@ -10,71 +10,104 @@
   <div id="cart-badge" onclick="location.href='cart.html'">🛒 Cart (<span id="cart-count">0</span>)</div>
   <header>
     <div class="container navbar">
-      <div class="brand"><div class="logo"></div> <div>Secure Payment</div></div>
-      <div class="nav-right"><a class="btn btn-ghost" href="index.html">Menu</a></div>
+      <div class="brand"><div class="logo"></div> <div>Secure Checkout</div></div>
+      <div class="nav-right"><a class="btn btn-ghost" href="index.html">Cancel</a></div>
     </div>
   </header>
 
   <main class="container section">
-    <div class="panel shadow" id="payment-details">
-      <h2>Your Total is: <span id="payment-amount">₹0.00</span></h2>
-      <p class="text-muted">Click to complete your order. (Demo checkout)</p>
-      <button class="btn btn-accent" style="margin-top:1rem" onclick="processPayment()">Pay Now</button>
+    <div id="payment-container" class="panel shadow" style="max-width: 500px; margin: 1rem auto; text-align: center;">
+      <h2 style="margin-bottom: 0.5rem;">Scan to Pay</h2>
+      <p style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">
+        Total: <span id="payment-amount">₹0.00</span>
+      </p>
+      
+      <div id="qr-code-step">
+        <img src="my-qr-code.jpeg" alt="Scan this QR code with your UPI app" style="max-width: 250px; width: 100%; border-radius: 10px; margin-bottom: 1rem;">
+        <p class="text-muted">canteen@asiet.upi</p>
+        <p style="margin-top: 1.5rem;">After paying, click the button below.</p>
+        <button class="btn btn-primary" onclick="showTransactionIdStep()" style="width: 100%; margin-top: 1rem;">
+          I Have Paid, Enter Transaction ID
+        </button>
+      </div>
+
+      <div id="transaction-id-step" class="hidden">
+        <label for="upi-id-input" style="display:block; margin-top: 1.5rem; font-weight: 500;">Enter UPI Transaction ID</label>
+        <p class="text-muted" style="font-size: 0.9rem; margin-bottom: 0.5rem;">You can find this ID in your UPI app's payment history.</p>
+        <input id="upi-id-input" class="input" type="text" placeholder="e.g., 2245..." required style="text-align: center; font-size: 1.1rem;">
+        <button class="btn btn-primary" onclick="confirmOrder()" style="width: 100%; margin-top: 1rem; padding: 0.8rem; font-size: 1.1rem;">
+          Confirm Order
+        </button>
+      </div>
     </div>
 
-    <div class="panel shadow hidden" id="payment-success">
-      <h2>✅ Payment Successful!</h2>
-      <p>Your order has been confirmed and sent to the canteen.</p>
+    <div class="panel shadow hidden" id="payment-success" style="text-align: center; max-width: 500px; margin: 1rem auto;">
+      <h2>✅ Order Confirmed!</h2>
+      <p>Thank you. Your order has been sent to the canteen.</p>
       <p>Order ID: <strong id="order-id"></strong></p>
-      <p>Estimated waiting time: <strong id="wait-time"></strong> minutes.</p>
-      <div class="row" style="margin-top:.6rem;">
-        <a class="btn" href="track.html">Track Order</a>
+      <p>Your UPI Transaction ID has been saved for verification.</p>
+      <div class="row" style="margin-top: 1.5rem; justify-content: center;">
+        <a class="btn btn-primary" href="track.html">Track Your Order</a>
         <a class="btn btn-ghost" href="index.html">Back to Menu</a>
       </div>
     </div>
   </main>
 
-<script src="app.js"></script>
+  <script src="app.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       updateCartCount();
-      const cart = APP.getCart(); // Use getCart()
+      const cart = APP.getCart();
       const total = cart.reduce((s, item) => s + (APP.parseRupees(item.price) * item.qty), 0);
       document.getElementById('payment-amount').textContent = APP.fmtRupees(total);
     });
+    
+    // NEW function to switch from the QR code view to the Transaction ID input view
+    function showTransactionIdStep() {
+      document.getElementById('qr-code-step').classList.add('hidden');
+      document.getElementById('transaction-id-step').classList.remove('hidden');
+    }
 
-    function processPayment(){
-      const cart = APP.getCart(); // Use getCart()
-      if(!cart.length){ alert('Your cart is empty.'); return; }
+    // UPDATED function to handle the final confirmation
+    function confirmOrder(){
+      const cart = APP.getCart();
+      if (!cart.length) { 
+        APP.showToast('Your cart is empty.', 'error'); 
+        return; 
+      }
 
-      const totalItems = cart.reduce((s,i) => s + i.qty, 0);
-      const wait = totalItems * 5; 
-      const id = APP.uid();
-      
+      const transactionIdInput = document.getElementById('upi-id-input');
+      const transactionId = transactionIdInput.value.trim();
+
+      // Check if the user entered a transaction ID
+      if (!transactionId) {
+        APP.showToast('Please enter your UPI Transaction ID.', 'error');
+        return;
+      }
+
       const totalAmount = cart.reduce((s, item) => s + (APP.parseRupees(item.price) * item.qty), 0);
-
       const user = APP.getUser() || { name:'Guest', role:'user' };
-      const placed = APP.getPlacedOrders();
-      
-      const orderItems = cart.map(item => ({ name: item.itemName, qty: item.qty, price: item.price, total: APP.fmtRupees(APP.parseRupees(item.price) * item.qty) }));
+      const placedOrders = APP.getPlacedOrders();
+      const orderId = APP.uid();
+      const orderItems = cart.map(item => ({ name: item.itemName, qty: item.qty, price: item.price }));
 
-      placed.push({
-        id,
+      placedOrders.push({
+        id: orderId,
         user: user.name || 'Guest',
         items: orderItems,
         total: totalAmount,
-        status:'Pending',
+        status: 'Pending',
+        transactionId: transactionId, // ADDED the transaction ID to the order
         at: new Date().toISOString()
       });
-      APP.setPlacedOrders(placed);
+      APP.setPlacedOrders(placedOrders);
       
       APP.setCart([]);
       updateCartCount();
 
-      document.getElementById('payment-details').classList.add('hidden');
+      document.getElementById('payment-container').classList.add('hidden');
       document.getElementById('payment-success').classList.remove('hidden');
-      document.getElementById('order-id').textContent = id;
-      document.getElementById('wait-time').textContent = wait;
+      document.getElementById('order-id').textContent = orderId;
     }
   </script>
 </body>
